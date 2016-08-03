@@ -1,5 +1,5 @@
 
-public class parser1
+public class Parser
 {
 	public static void parseProgram(Tokenizer t)
 	{
