@@ -70,6 +70,7 @@ public class Parser
 			System.out.println("You need to specify if you want to delete record(s)(rows) or field(s)(columns)"";
 		
 		if (t.peekToken().getType == T_STRING)
+			//Exression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
 			expression = t.getToken();
 		else
 			System.out.println("You need to specify what you want to delete.");
@@ -81,8 +82,42 @@ public class Parser
 			variable = t.getToken();
 		else
 			System.out.println("You need the name of the table you want to delete.");
-		//Checks if exression is one of 3 options: 3; 3,4; 3-5
+		//Somehow check expression contents and store if correct, then delete accordingly
+	}
+	
+	public static void parseKeepStatement(Tokenizer t)
+	{
+		Token expression;
+		Token variable;
+		Int columns; //1 means column, 0 means row
+		t.gettoken(); //Deletes 'DELETE' from strong
+		if (t.peekToken().getType() == T_RECCORD)
+		{
+			t.getToken();
+			columns = 1;	
+		}
+		if (t.peekTpken().getType() == T_FIELD)
+		{
+			t.gettoken();
+			columns = 0;
+		}
+		else
+			System.out.println("You need to specify if you want to keep record(s)(rows) or field(s)(columns)"";
 		
+		if (t.peekToken().getType == T_STRING)
+			//Exression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
+			expression = t.getToken();
+		else
+			System.out.println("You need to specify what you want to keep.");
+		if (t.peekToken().getType() == T_FROM)
+			t.getToken();
+		else
+			System.out.println("You need the keyword 'FROM' to specify which table.");
+		if (t.peekToken().getType() == T_VARIABLE)
+			variable = t.getToken();
+		else
+			System.out.println("You need the name of the table you want to manipulate.");
+		//Somehow check expression contents and store if correct, then delete other records/fields accordingly
 	}
 	
 	
