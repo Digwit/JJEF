@@ -18,11 +18,36 @@ public class Tokenizer
     }
     else
     {
+      String s = myProgram.substring(0, IndexOf(" ") - 1); //Should this be -1?
+      myProgram = myProgram.substring(IndexOf(" ")); 
+      //3 (below) is temporary int; we will make a numbered chart of tokens
+      return new Token (s, 3);
+    }
+  }
+  
+   public Token peekToken()
+  {
+    
+    if(  (myProgram.substring(0,1) == " ") || (myProgram.substring(0,1) == "/n")  )
+    {
+      myProgram = myProgram.substring(1);
+      return peekToken(); //This is the recursive bit
+    }
+    else
+    {
       //3 (below) is temporary int; we will make a numbered chart of tokens
       return new Token (myProgram.substring(0, IndexOf(" ") - 1), 3);
     }
   }
-
+  
+  public boolean moreTokens() //Not sure if this works. What does peekToken() return if there are no more tokens?
+  {
+    if (peekToken() = null)
+      return false;
+    return true;
+  }
+  
+}
  
  /*
  //WENT THRU AND REPLACED MYVALUE WITH PROGRAM BC WE SWITCHED THIS FROM THE TOKEN CLASS TO THIS TOKENIZER CLASS. CORRECT ME IF IM WRONG
