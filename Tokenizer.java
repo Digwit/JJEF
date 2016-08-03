@@ -44,12 +44,17 @@ public class Tokenizer
   {
     if (myProgram = null)
       return false;
-    else if (  (myProgram.IndexOf(" ") = -1) && ((myProgram.IndexOf("\n") = -1)  )
-    return true;
-  }
-  
+    else
+    {
+    for (int k = 0; k < myProgram.length() - 1; k++)
+    {
+      if (!myProgram.substring(k, k+1).equals(" ") && !myProgram.substring(k, k+1).equals("\n")  )
+        return true;
+      else
+        return false;
+    }
+    }
 }
- 
  /*
  //WENT THRU AND REPLACED MYVALUE WITH PROGRAM BC WE SWITCHED THIS FROM THE TOKEN CLASS TO THIS TOKENIZER CLASS. CORRECT ME IF IM WRONG
 public class Tokenizer 
