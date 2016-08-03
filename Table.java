@@ -6,9 +6,16 @@ public class Table
   //For test
   public static void main(String[] args)
   {
+	  Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv\" into crime ; " );
+//	  while(t.moreTokens())
+//		  System.out.println(t.getToken());
+  Parser p = new Parser(t);
+	  p.parseProgram();
+	  /*
     System.out.println(convert("C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"));
     Table attempt1 = new Table(convert("C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"));
     System.out.println("Index of grid: " + attempt1.myColumns.get("grid"));
+    */
   }
   
 
