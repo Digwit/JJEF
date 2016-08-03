@@ -9,5 +9,17 @@ public class Token
   myType = type;
  }
  
+ public String getValue()
+ {
+  return myValue;
+ }
+ 
+ public int getType() //Not sure how this works because in Parser I use this with T_SEMICOLON, not just integers
+ {
+  return myType;
+ }
+ 
+ }
+ 
 }
 
