@@ -1,3 +1,30 @@
+public class Tokenizer 
+{
+  private String myProgram;
+  
+  // constructor 
+  public Tokenizer(String program)
+  {
+    myProgram = program;
+  }
+  
+  public Token getToken()
+  {
+    
+    if(  (myProgram.substring(0,1) == " ") || (myProgram.substring(0,1) == "/n")  )
+    {
+      myProgram = myProgram.substring(1);
+      return getToken(); //This is the recursive bit
+    }
+    else
+    {
+      //3 (below) is temporary int; we will make a numbered chart of tokens
+      return new Token (myProgram.substring(0, IndexOf(" ") - 1), 3);
+    }
+  }
+
+ 
+ /*
  //WENT THRU AND REPLACED MYVALUE WITH PROGRAM BC WE SWITCHED THIS FROM THE TOKEN CLASS TO THIS TOKENIZER CLASS. CORRECT ME IF IM WRONG
 public class Tokenizer 
  {
@@ -84,3 +111,4 @@ public String getTokenString()
     
   }
 }
+*/
