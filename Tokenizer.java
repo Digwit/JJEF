@@ -74,7 +74,7 @@ public class Tokenizer {
 	public Token peekToken() {
 		if ((myProgram.substring(0, 1).equals(" ")) || (myProgram.substring(0, 1).equals("/n"))) {
 			myProgram = myProgram.substring(1);
-			return getToken(); // This is the recursive bit
+			return peekToken(); // This is the recursive bit
 		} else {
 			String s = myProgram.substring(0, myProgram.indexOf(" "));
 			int t = 0;
@@ -92,6 +92,14 @@ public class Tokenizer {
 				t = Token.T_RECORD;
 			else if (s.toUpperCase().equals("FIELD"))
 				t = Token.T_FIELD;
+			else if (s.toUpperCase().equals("RECORDS"))
+				t = Token.T_RECORDS;
+			else if (s.toUpperCase().equals("FIELDS"))
+				t = Token.T_FIELDS;
+			else if (s.toUpperCase().equals("TO"))
+				t = Token.T_TO;
+			else if (s.substring(0, 1).equals(","))
+				t = Token.T_COMMA;
 			else if (s.toUpperCase().equals("WHERE"))
 				t = Token.T_WHERE;
 			else if (s.substring(0, 1).equals("\"") && (s.substring(s.length() - 1, s.length()).equals("\"")))
@@ -112,8 +120,8 @@ public class Tokenizer {
 		}
 	}
 
-	public boolean moreTokens() // Not sure if this works. What does peekToken()
-								// return if there are no more tokens?
+	public boolean moreTokens()
+
 	{
 		if (myProgram.equals(""))
 			return false;
