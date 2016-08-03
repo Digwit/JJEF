@@ -12,6 +12,10 @@ public class Token
 	public static final int T_NUMBER = 10;
 	public static final int T_VARIABLE= 11;
 	public static final int T_SEMICOLON = 12;
+	public static final int T_RECORDS = 13;
+	public static final int T_FIELDS = 14;
+	public static final int T_COMMA = 15;
+	public static final int T_TO = 16;
 	/*
 	public static final int T_("-") = 13;
 	public static final int T_(",") = 14;
