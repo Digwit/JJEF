@@ -7,7 +7,7 @@ public class Parser
 	}
 	public static void parseStatements(Tokenizer t)
 	{
-		if (t.moreTokers())
+		if (t.moreTokens())
 		{
 			parseStatement(t);
 			if (t.peekToken().getType()== T_SEMICOLON)
