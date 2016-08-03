@@ -20,7 +20,7 @@ public class Parser
 	
 	public static void parseStatement(Tokenizer t)
 	{
-		if (t.peektoken().getType() == T_LOAD)
+		if (t.peekToken().getType() == T_LOAD)
 			parseLoadStatement(t);
 		else if(t.peekToken().getType() == T_DELETE)
 			parseDeleteStatement(t);
@@ -34,43 +34,43 @@ public class Parser
 	{
 		Token filename;
 		Token variable;
-		t.gettoken();
+		t.getToken();
 		if (t.peekToken().getType() == T_STRING)
 			filename = t.getToken();
 		else
 			System.out.println("You needed a filename.");
-		if (t.peekToken().getType == T_INTO)
-			t.gettoken();
+		if (t.peekToken().getType() == T_INTO)
+			t.getToken();
 		else
 			System.out.println("You need the 'INTO' keyword...");
 		if (t.peekToken().getType() == T_VARIABLE)
 			variable = t.getToken();
 		else
 			System.out.println("You need a variable name for your table!");
-		//Do somethihng with variable and filename that loads csv file into table
+		//Do something with variable and filename that loads csv file into table
 	}
 	
 	public static void parseDeleteStatement(Tokenizer t)
 	{
 		Token expression;
 		Token variable;
-		Int columns; //1 means column, 0 means row
-		t.gettoken(); //Deletes 'DELETE' from strong
-		if (t.peekToken().getType() == T_RECCORD)
+		int columns; //1 means column, 0 means row
+		t.getToken(); //Deletes 'DELETE' from strong
+		if (t.peekToken().getType() == T_RECORD)
 		{
 			t.getToken();
 			columns = 1;	
 		}
-		if (t.peekTpken().getType() == T_FIELD)
+		if (t.peekToken().getType() == T_FIELD)
 		{
-			t.gettoken();
+			t.getToken();
 			columns = 0;
 		}
 		else
-			System.out.println("You need to specify if you want to delete record(s)(rows) or field(s)(columns)"";
+			System.out.println("You need to specify if you want to delete record(s)(rows) or field(s)(columns)");
 		
-		if (t.peekToken().getType == T_STRING)
-			//Exression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
+		if (t.peekToken().getType() == T_STRING)
+			//Expression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
 			expression = t.getToken();
 		else
 			System.out.println("You need to specify what you want to delete.");
@@ -89,23 +89,23 @@ public class Parser
 	{
 		Token expression;
 		Token variable;
-		Int columns; //1 means column, 0 means row
-		t.gettoken(); //Deletes 'DELETE' from strong
-		if (t.peekToken().getType() == T_RECCORD)
+		int columns; //1 means column, 0 means row
+		t.getToken(); //Deletes 'DELETE' from strong
+		if (t.peekToken().getType() == T_RECORD)
 		{
 			t.getToken();
 			columns = 1;	
 		}
-		if (t.peekTpken().getType() == T_FIELD)
+		if (t.peekToken().getType() == T_FIELD)
 		{
-			t.gettoken();
+			t.getToken();
 			columns = 0;
 		}
 		else
-			System.out.println("You need to specify if you want to keep record(s)(rows) or field(s)(columns)"";
+			System.out.println("You need to specify if you want to keep record(s)(rows) or field(s)(columns)");
 		
-		if (t.peekToken().getType == T_STRING)
-			//Exression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
+		if (t.peekToken().getType() == T_STRING)
+			//Expression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
 			expression = t.getToken();
 		else
 			System.out.println("You need to specify what you want to keep.");
@@ -122,4 +122,3 @@ public class Parser
 	
 	
 	}
-}
