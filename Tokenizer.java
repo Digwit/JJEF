@@ -1,6 +1,5 @@
  //WENT THRU AND REPLACED MYVALUE WITH PROGRAM BC WE SWITCHED THIS FROM THE TOKEN CLASS TO THIS TOKENIZER CLASS. CORRECT ME IF IM WRONG
- 
- public class Tokenizer 
+public class Tokenizer 
  {
   private String myProgram;
   
@@ -59,5 +58,29 @@ public String getTokenString()
    
    return temp;
   }
- }
- 
+}
+  
+  public String peekToken(String s)
+  {
+    String temp = " ";
+  if(program.substring(0) == " ")
+  {
+   String delStr = " ";
+   String newStr;
+   newStr =  program.replace(delStr, "");
+   return newStr;
+  }
+  
+  else if(program.substring(0) == "\n")
+  {
+   String delStr = "\n";
+   String newStr;
+   newStr =  program.replace(delStr, "");
+   return newStr;
+  }
+  //CREATING NEW TOKEN : IDK IF THIS IS RIGHT
+  new Token (String newStr)
+  
+    
+  }
+}
