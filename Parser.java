@@ -128,6 +128,7 @@ public class parser
     Token expression;
     Token variable;
     t.getToken();
+    //UHHH how do i do this
    
         
         
