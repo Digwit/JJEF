@@ -52,21 +52,37 @@ public class Parser
 	
 	public static void parseDeleteStatement(Tokenizer t)
 	{
-		Token 
-		t.gettoken(); //Doesn't this return somethihng? Is this valid even?
-		if (t.peekToken().getType() == T_STRING)
-			filename = t.getToken();
+		Token expression;
+		Token variable;
+		Int columns; //1 means column, 0 means row
+		t.gettoken(); //Deletes 'DELETE' from strong
+		if (t.peekToken().getType() == T_RECCORD)
+		{
+			t.getToken();
+			columns = 1;	
+		}
+		if (t.peekTpken().getType() == T_FIELD)
+		{
+			t.gettoken();
+			columns = 0;
+		}
 		else
-			System.out.println("You needed a filename.");
-		if (t.peekToken().getType == T_INTO)
+			System.out.println("You need to specify if you want to delete record(s)(rows) or field(s)(columns)"";
+		
+		if (t.peekToken().getType == T_STRING)
+			expression = t.getToken();
+		else
+			System.out.println("You need to specify what you want to delete.");
+		if (t.peekToken().getType() == T_FROM)
 			t.getToken();
 		else
-			System.out.println("You need the 'INTO' keyword...");
+			System.out.println("You need the keyword 'FROM' to specify which table.");
 		if (t.peekToken().getType() == T_VARIABLE)
 			variable = t.getToken();
 		else
-			System.out.println("You need a variable name for your table!");
-		//Do somethihng with variable and filename that loads csv file into table
+			System.out.println("You need the name of the table you want to delete.");
+		//Checks if exression is one of 3 options: 3; 3,4; 3-5
+		
 	}
 	
 	
