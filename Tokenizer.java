@@ -36,8 +36,13 @@ public class Tokenizer
     else
     {
       //3 (below) is temporary int; we will make a numbered chart of tokens
+      if (IndexOf(" ") == -1
+      return null;
+      //NOT WORKING YET
+      else
       return new Token (myProgram.substring(0, IndexOf(" ") - 1), 3);
     }
+    return null;
   }
   
   public boolean moreTokens() //Not sure if this works. What does peekToken() return if there are no more tokens?
