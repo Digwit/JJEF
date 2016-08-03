@@ -1,231 +1,224 @@
-import java.util.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Table {
-	// For test
-	public static void main(String[] args) {
-		Tokenizer t = new Tokenizer(
-				"Load 10 \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv\" into crime ; ");
-		// while(t.moreTokens())
-		// System.out.println(t.getToken());
-		Parser p = new Parser(t);
-		p.parseProgram();
+public class Parser
+{
+	private Tokenizer myTokenizer;
+	private Map <String, Table> tableVariables;
+	
+	
+	
+	public Parser(Tokenizer t)
+	{
+		tableVariables = new HashMap<String, Table>();
+		myTokenizer = t;
+	}
+	public void parseProgram()
+	{
+		parseStatements();
+	}
+	public void parseStatements()
+	{
+		if (myTokenizer.moreTokens())
+		{
+			parseStatement();
+			if (myTokenizer.peekToken().getType() == Token.T_SEMICOLON)
+				myTokenizer.getToken();
+			else
+				parseError("Expected a semicolon! :(");
+			parseStatements();
+		}
+	}
+
+	public void parseStatement()
+	{
+		if (myTokenizer.peekToken().getType() == Token.T_LOAD)
+			parseLoadStatement();
+		else if(myTokenizer.peekToken().getType() == Token.T_DELETE)
+			parseDeleteStatement();
+		else if(myTokenizer.peekToken().getType() == Token.T_KEEP)
+			parseKeepStatement();
 		/*
-		 * System.out.println(convert(
-		 * "C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"
-		 * )); Table attempt1 = new Table(convert(
-		 * "C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"
-		 * )); System.out.println("Index of grid: " +
-		 * attempt1.myColumns.get("grid"));
+		else if(myTokenizer.peekToken().getType() == Token.T_PRINT)
+			parsePrintStatement();
 		 */
 	}
 
-	// Instance variables
-	// Precondition: the first row contains variable names (as Strings) for each
-	// column
-	private Map<String, Integer> myColumns;
-
-	private String[][] myArray;
-	private int[] myRowIndex;
-	private int[] myColIndex;
-
-	// Constructor
-	public Table(String[][] input) {
-		myRowIndex = new int[input.length];
-		for (int r = 0; r < input.length; r++) {
-			myRowIndex[r] = r;
-		}
-
-		myColIndex = new int[input[0].length];
-		for (int c = 0; c < input[0].length; c++) {
-			myColIndex[c] = c;
-		}
-		myColumns = makeMap(input);
-		myArray = input;
-	}
-
-	// METHODS
-	public Map<String, Integer> makeMap(String[][] data) {
-		myColumns = new HashMap<String, Integer>();
-
-		for (int k = 0; k < data[0].length; k++) {
-			myColumns.put(data[0][k], k);
-		}
-		return myColumns;
-	}
-
-	public int getRowIndex(int x) {
-		return myRowIndex[x];
-	}
-
-	public int getColIndex(int x) {
-		return myColIndex[x];
-	}
-
-	public void setRowIndex(int x, int y) {
-		myRowIndex[x] = y;
-	}
-
-	// Convert changes a csv file into a String[][] (NOT a new table)
-	public static String[][] convert(String fileName) {
-		String[][] dataTable;
-
-		Source s;
-		try {
-			s = new Source(fileName);
-		} catch (Exception e) {
-			System.out.println("oops");
-			s = null;
-		}
-
-		// Sets size of output array
-		String example = s.getLine(0);
-		String[] fields = example.split(",");
-		dataTable = new String[s.getNumberOfLines()][fields.length];
-
-		for (int k = 0; k < s.getNumberOfLines(); k++) {
-			String line = s.getLine(k);
-			String[] parts;
-			parts = line.split(",");
-
-			for (int i = 0; i < parts.length; i++) {
-				dataTable[k][i] = parts[i];
-			}
-		}
-		return dataTable;
-	}
-
-	// Precondition: input tables' first column is the identifying variable, for
-	// now :)
-	// Precondition2: both input tables have same students in same order
-	public static Table mergeSameRows(Table x, Table y) {
-		String[][] merged;
-		merged = new String[x.myArray.length][x.myArray[0].length + y.myArray[0].length - 1];
-		for (int r = 0; r < x.myArray.length; r++) {
-			for (int c = 0; c < x.myArray[0].length; c++) {
-				merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
-			}
-		}
-		for (int r = 0; r < y.myArray.length; r++) {
-			for (int c = 1; c < y.myArray[0].length - 1; c++) {
-				merged[r][c + x.myArray[0].length] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
-			}
-		}
-		return new Table(merged);
-	}
-
-	public static Table mergeDiffRows(Table x, Table y) {
-
-		String[][] merged;
-		merged = new String[x.myArray.length + y.myArray.length - 1][x.myArray[0].length];
-		for (int r = 0; r < x.myArray.length; r++) {
-			for (int c = 0; c < x.myArray[0].length; c++) {
-				merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
-			}
-		}
-		// second table--> delete row 1
-		for (int r = 1; r < y.myArray.length - 1; r++) {
-			for (int c = 0; c < y.myArray[0].length; c++) {
-				merged[r + x.myArray.length][c] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
-			}
-		}
-		return new Table(merged);
-
-	}
-
-	public static Table deleteRow(Table x, int d) // the row that user wants to
-													// delete is int d
+	public void parseLoadStatement()
 	{
-		String[][] deleted;
-		deleted = new String[x.myArray.length - 1][x.myArray[0].length];
+		Token filename = null;
+		Token variable = null;
 
-		for (int r = 0; r < d; r++) {
-			for (int c = 0; c < x.myArray[0].length; c++) {
-				deleted[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; // copies
-																				// over
-																				// top
-																				// half
-																				// of
-																				// original
-																				// array
-			}
-		}
+		myTokenizer.getToken();
+		
+		if (myTokenizer.peekToken().getType() == Token.T_STRING)
+			filename = myTokenizer.getToken();
+		else
+			parseError("You needed a filename.");
 
-		for (int r = d + 1; r < x.myArray.length; r++) {
-			for (int c = 0; c < x.myArray[0].length; c++) {
-				deleted[r + d][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; // copies
-																					// over
-																					// bottom
-																					// half
-																					// of
-																					// original
-																					// array
-			}
-		}
-		return new Table(deleted);
+		if (myTokenizer.peekToken().getType() == Token.T_INTO)
+			myTokenizer.getToken();
+		else
+			parseError("You need the 'INTO' keyword...");
+		
+		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE)
+			variable = myTokenizer.getToken();
+		else
+			parseError("You need a variable name for your table!");
+		
+		Table table = new Table (Table.convert(filename.getValue()));
+		tableVariables.put(variable.getValue(), table);
 	}
 
-	public static Table deleteColumn(Table x, int d) {
-		String[][] deleted1;
-		deleted1 = new String[x.myArray.length][x.myArray[0].length - 1];
+	public void parseDeleteStatement()
+	{
+		Token expression = null;
+		Token variable = null;
+		List<Integer> expressions = null;
+		int range = 0;
+		
+		int columns = -1; //1 means column, 0 means row
+		myTokenizer.getToken(); //Deletes 'DELETE' from strong
+		if (myTokenizer.peekToken().getType() == Token.T_RECORD)
+		{
+			myTokenizer.getToken();
+			columns = 1;	
+		}
+		else if (myTokenizer.peekToken().getType() == Token.T_FIELD)
+		{
+			myTokenizer.getToken();
+			columns = 0;
+		}
+		else if (myTokenizer.peekToken().getType() == Token.T_RECORDS)
+		{
+			myTokenizer.getToken();
+			columns = 3;
+		}
+		else if (myTokenizer.peekToken().getType() == Token.T_FIELDS)
+		{
+			myTokenizer.getToken();
+			columns = 2;
+		}
+		else
+			parseError("You need to specify if you want to delete record(s)(rows) or field(s)(columns)");
 
-		for (int r = 0; r < x.myArray.length; r++) {
-			for (int c = 0; c < d; c++) {
-				deleted1[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; // copies
-																				// over
-																				// left
-																				// half
-																				// of
-																				// original
-																				// array
+		if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
+			//Expression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
+			expression = myTokenizer.getToken();
+		else
+			parseError("You need to specify what you want to delete.");
+		
+		if ((columns == 3) || (columns == 2))
+		{
+			if (myTokenizer.peekToken().getType() == Token.T_COMMA)
+			{
+				expressions = new ArrayList<Integer>();
+				expressions.add(Integer.parseInt(expression.getValue()));
+				
+				while (myTokenizer.peekToken().getType() == Token.T_COMMA)
+				{
+					myTokenizer.getToken();
+					if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
+						//Expression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
+						expression = myTokenizer.getToken();
+					else
+						parseError("You need to specify what you want to delete.");
+					expressions.add(Integer.parseInt(expression.getValue()));
+				}	
+			}
+			if (myTokenizer.peekToken().getType() == Token.T_TO)
+			{
+				myTokenizer.getToken();
+				range = 1;
+				expressions.add(Integer.parseInt(expression.getValue()));
+				if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
+					expression = myTokenizer.getToken();
+				else
+					parseError("You need to specify the upper bound of the RECORDS you want to delete.");
+				expressions.add(Integer.parseInt(expression.getValue()));
 			}
 		}
-		for (int r = 0; r < x.myArray.length; r++) {
-			for (int c = d + 1; c < x.myArray[0].length; c++) {
-				deleted1[r + d][c] = x.myArray[x.getRowIndex(r + d)][x.getColIndex(c)];
+		
+		if (myTokenizer.peekToken().getType() == Token.T_FROM)
+			myTokenizer.getToken();
+		else
+			parseError("You need the keyword 'FROM' to specify which table.");
+		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE)
+			variable = myTokenizer.getToken();
+		else
+			parseError("You need the name of the table you want to delete.");
+		
+		
+		if (columns == 0)
+		{
+			tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), Integer.parseInt(expression.getValue())));
+		}
+		else if (columns == 1)
+		{
+			tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), Integer.parseInt(expression.getValue())));
+		}
+		else if (columns == 2)
+		{
+			if (range == 0)
+			{
+			int deleted = 0;
+			for (Integer e: expressions)
+			{
+				tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), e - deleted));
+			}
+			}
+			else if (range == 1)
+			{//NOT DONE
+				for (int k = 
+						expressions[1]; )
+				tableVariables.putAll(variable.getValue(), Table);
 			}
 		}
-		return new Table(deleted1);
 	}
 
-	public void printInfo(String variable) {
-		// Prints name of variable and number of observations
-		System.out.println(variable + " (" + myArray.length + " observations):");
+	public  void parseKeepStatement()
+	{
+		Token expression = null;
+		Token variable = null;
+		int columns = -1; //1 means column, 0 means row
+		myTokenizer.getToken(); //Deletes 'DELETE' from strong
+		if (myTokenizer.peekToken().getType() == Token.T_RECORD)
+		{
+			myTokenizer.getToken();
+			columns = 1;	
+		}
+		if (myTokenizer.peekToken().getType() == Token.T_FIELD)
+		{
+			myTokenizer.getToken();
+			columns = 0;
+		}
+		else
+			parseError("You need to specify if you want to keep record(s)(rows) or field(s)(columns)");
 
-		// Calculates and prints mean
-		double mean = 0;
-		for (int r = 1; r < myArray.length; r++) {
-			mean = mean + Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
-		}
-		mean /= myArray.length;
-		System.out.println("Mean: " + mean);
-
-		// Calculates min and max and prints
-		double max = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(variable)]]);
-		double min = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(variable)]]);
-		for (int r = 1; r < myArray.length; r++) {
-			if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]) < min)
-				min = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
-			if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]) > max)
-				max = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
-		}
-		mean /= myArray.length;
-		System.out.println("Max: " + max + "\n Min: " + min);
-
-		// Calculates and prints median
-		double[] store;
-		store = new double[myArray.length];
-		for (int r = 1; r < myArray.length; r++) {
-			store[r] = Double.parseDouble(myArray[r][myColumns.get(variable)]);
-		}
-		Arrays.sort(store);
-		if (myArray.length % 2 == 0) {
-			System.out.println((Double.parseDouble(myArray[(myArray.length / 2)][myColIndex[myColumns.get(variable)]])
-					+ Double.parseDouble(myArray[(myArray.length / 2 + 1)][myColumns.get(variable)])) / 2);
-		} else {
-			System.out
-					.println(Double.parseDouble(myArray[myArray.length / 2 + 1][myColIndex[myColumns.get(variable)]]));
-		}
+		if (myTokenizer.peekToken().getType() == Token.T_STRING)
+			//Expression could be one of 3 options: integer; integer + "," + integer etc.; integer + "-" + integer
+			expression = myTokenizer.getToken();
+		else
+			parseError("You need to specify what you want to keep.");
+		if (myTokenizer.peekToken().getType() == Token.T_FROM)
+			myTokenizer.getToken();
+		else
+			parseError("You need the keyword 'FROM' to specify which table.");
+		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE)
+			variable = myTokenizer.getToken();
+		else
+			parseError("You need the name of the table you want to manipulate.");
 	}
+
+
+
+public void parseError(String message)
+{
+	System.out.println(message);
+	System.exit(1);
+}
+
 
 }
