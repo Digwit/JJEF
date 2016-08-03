@@ -31,15 +31,10 @@ public class Tokenizer
     if(  (myProgram.substring(0,1) == " ") || (myProgram.substring(0,1) == "/n")  )
     {
       myProgram = myProgram.substring(1);
-      return peekToken(); //This is the recursive bit
+      return peekToken();
     }
     else
     {
-      //3 (below) is temporary int; we will make a numbered chart of tokens
-      if (IndexOf(" ") == -1
-      return null;
-      //NOT WORKING YET
-      else
       return new Token (myProgram.substring(0, IndexOf(" ") - 1), 3);
     }
     return null;
@@ -47,8 +42,9 @@ public class Tokenizer
   
   public boolean moreTokens() //Not sure if this works. What does peekToken() return if there are no more tokens?
   {
-    if (peekToken() = null)
+    if (myProgram = null)
       return false;
+    else if (  (myProgram.IndexOf(" ") = -1) && ((myProgram.IndexOf("\n") = -1)  )
     return true;
   }
   
