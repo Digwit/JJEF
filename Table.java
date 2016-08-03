@@ -17,16 +17,26 @@ public class Table
     private Map<String, Integer> myColumns;
     
     private String[][] myArray;
-  //  private int[] myRowIndex;
- //   private int[] myColIndex;
+    private int[] myRowIndex;
+    private int[] myColIndex;
     
     
     //Constructor
     public Table(String[][] input)
     {
+    	myRowIndex = new int [input.length];
+        for (int r = 0; r < input.length; r++)
+        {
+       	 myRowIndex[r] = r;
+        }
+        
+        myColIndex = new int[input[0].length];
+        for (int c = 0; c < input[0].length; c++)
+        {
+       	 myColIndex[c] = c;
+        }
       myColumns = makeMap(input);
       myArray = input;
-     // myRowIndex = new int[input.length];
     }
     
     
@@ -43,9 +53,24 @@ public class Table
       return myColumns;
     }
     
+    public int getRowIndex(int x)
+    {
+    	return myRowIndex[x];
+    }
     
     
+    public int getColIndex(int x)
+    {
+    	return myColIndex[x];
+    }
     
+    public void setRowIndex(int x, int y)
+    {
+    	myRowIndex[x] = y;
+    }
+    
+    
+    //Convert changes a csv file into a String[][] (NOT a new table)
     public static String[][] convert(String fileName)
     {
       String[][] dataTable;
@@ -91,14 +116,14 @@ public class Table
       {
         for (int c = 0; c < x.myArray[0].length; c++)
         {
-          merged[r][c] = x.myArray[r][c];
+          merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
         }
       }
       for (int r = 0; r < y.myArray.length; r++)
       {
         for (int c = 1; c < y.myArray[0].length - 1; c++)
         {
-          merged[r][c + x.myArray[0].length] = y.myArray[r][c];
+          merged[r][c + x.myArray[0].length] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
         }
       }
       return new Table(merged);
@@ -113,7 +138,7 @@ public class Table
         {
           for (int c = 0; c < x.myArray[0].length; c++)
           {
-            merged[r][c] = x.myArray[r][c];
+            merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
           }
         }
         //second table--> delete row 1
@@ -121,7 +146,7 @@ public class Table
         {
           for (int c = 0; c < y.myArray[0].length; c++)
           {
-            merged[r + x.myArray.length][c] = y.myArray[r][c];
+            merged[r + x.myArray.length][c] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
           }
         }
         return new Table(merged);
@@ -139,7 +164,7 @@ public class Table
       {
         for (int c = 0; c < x.myArray[0].length; c++)
         {
-          deleted[r][c] = x.myArray[r][c]; //copies over top half of original array
+          deleted[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //copies over top half of original array
         }
       }
       
@@ -147,7 +172,7 @@ public class Table
       {
         for (int c = 0; c < x.myArray[0].length; c++)
         {
-          deleted[r + d][c] = x.myArray[r][c]; // copies over bottom half of original array
+          deleted[r + d][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; // copies over bottom half of original array
         }
       }
       return new Table(deleted);
@@ -162,14 +187,14 @@ public class Table
       {
         for (int c = 0; c < d ; c++) 
         {
-          deleted1 [r][c] = x.myArray[r][c]; //copies over left half of original array
+          deleted1 [r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //copies over left half of original array
         }
       }
       for (int r = 0; r < x.myArray.length; r++)
       {
         for (int c = d + 1; c < x.myArray[0].length; c++)
         {
-          deleted1[r+d][c] = x.myArray[r+d][c];
+          deleted1[r+d][c] = x.myArray[x.getRowIndex(r+d)][x.getColIndex(c)];
         }
       }
       return new Table(deleted1);
@@ -185,21 +210,21 @@ public class Table
     double mean = 0;
     for (int r = 1; r < myArray.length; r++)
     {
-      mean = mean + Double.parseDouble(myArray[r][myColumns.get(variable)]);
+      mean = mean + Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
     }
     mean /= myArray.length;
     System.out.println("Mean: " + mean);
     
     
     //Calculates min and max and prints
-    double max = Double.parseDouble(myArray[1][myColumns.get(variable)]);
-    double min = Double.parseDouble(myArray[1][myColumns.get(variable)]);
+    double max = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(variable)]]);
+    double min = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(variable)]]);
     for (int r = 1; r < myArray.length; r++)
     {
-      if (Double.parseDouble(myArray[r][myColumns.get(variable)]) < min)
-        min = Double.parseDouble(myArray[r][myColumns.get(variable)]);
-     if (Double.parseDouble(myArray[r][myColumns.get(variable)]) > max)
-        max = Double.parseDouble(myArray[r][myColumns.get(variable)]);
+      if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]) < min)
+        min = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
+     if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]) > max)
+        max = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
     }
     mean /= myArray.length;
     System.out.println("Max: " + max + "\n Min: " + min);
@@ -214,11 +239,11 @@ public class Table
      Arrays.sort(store);
      if (myArray.length % 2 == 0)
      {
-    	 System.out.println((Double.parseDouble(myArray[(myArray.length/2)][myColumns.get(variable)]) + Double.parseDouble(myArray[(myArray.length/2+1)][myColumns.get(variable)])) /2 );
+    	 System.out.println((Double.parseDouble(myArray[(myArray.length/2)][myColIndex[myColumns.get(variable)]]) + Double.parseDouble(myArray[(myArray.length/2+1)][myColumns.get(variable)])) /2 );
      }
      else
      {
-    	 System.out.println(Double.parseDouble(myArray[myArray.length/2 +1][myColumns.get(variable)]));
+    	 System.out.println(Double.parseDouble(myArray[myArray.length/2 +1][myColIndex[myColumns.get(variable)]]));
      }
    }
     
