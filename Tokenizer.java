@@ -18,8 +18,8 @@ public class Tokenizer
     }
     else
     {
-      String s = myProgram.substring(0, IndexOf(" ") - 1); //Should this be -1?
-      myProgram = myProgram.substring(IndexOf(" ")); 
+      String s = myProgram.substring(0, myProgram.IndexOf(" ") - 1); //Should this be -1?
+      myProgram = myProgram.substring(myProgram.IndexOf(" ")); 
       //3 (below) is temporary int; we will make a numbered chart of tokens
       return new Token (s, 3);
     }
@@ -35,7 +35,7 @@ public class Tokenizer
     }
     else
     {
-      return new Token (myProgram.substring(0, IndexOf(" ") - 1), 3);
+      return new Token (myProgram.substring(0, myProgram.IndexOf(" ") - 1), 3);
     }
     return null;
   }
