@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,14 +48,12 @@ public class Parser {
 
 		myTokenizer.getToken();
 
-		if (myTokenizer.peekToken().getType() == Token.T_STRING)
-		{
+		if (myTokenizer.peekToken().getType() == Token.T_STRING) {
 			String temp = myTokenizer.getToken().getValue();
 			temp = temp.substring(1);
-			temp = temp.substring(0, temp.length() -1);
+			temp = temp.substring(0, temp.length() - 1);
 			filename = new Token(temp, Token.T_STRING);
-		}
-		else
+		} else
 			parseError("You needed a filename.");
 
 		if (myTokenizer.peekToken().getType() == Token.T_INTO)
@@ -70,8 +70,7 @@ public class Parser {
 		tableVariables.put(variable.getValue(), table);
 	}
 
-	public void parseDeleteStatement() 
-	{
+	public void parseDeleteStatement() {
 		Token expression = null;
 		Token variable = null;
 		List<Integer> expressions = null;
@@ -144,17 +143,38 @@ public class Parser {
 		} else if (columns == 1) {
 			tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()),
 					Integer.parseInt(expression.getValue())));
-		} else if (columns == 2) {
+		} else if (columns == 3) {
 			if (range == 0) {
 				int deleted = 0;
+				Collections.sort(expressions);
+
 				for (Integer e : expressions) {
 					tableVariables.put(variable.getValue(),
 							Table.deleteRow(tableVariables.get(variable.getValue()), e - deleted));
+					deleted++;
 				}
 			} else if (range == 1) {
+				// Assumes user inputs something sensible like '5 TO 11'
 				for (int k = expressions.get(1); k > expressions.get(0); k--) {
 					tableVariables.put(variable.getValue(),
 							Table.deleteRow(tableVariables.get(variable.getValue()), k));
+				}
+			}
+		} else if (columns == 2) {
+			if (range == 0) {
+				int deleted = 0;
+				Collections.sort(expressions);
+
+				for (Integer e : expressions) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteColumn(tableVariables.get(variable.getValue()), e - deleted));
+					deleted++;
+				}
+			} else if (range == 1) {
+				// Assumes user inputs something sensible like '5 TO 11'
+				for (int k = expressions.get(1); k > expressions.get(0); k--) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteColumn(tableVariables.get(variable.getValue()), k));
 				}
 			}
 		}
@@ -163,33 +183,131 @@ public class Parser {
 	public void parseKeepStatement() {
 		Token expression = null;
 		Token variable = null;
+		List<Integer> expressions = null;
 		int columns = -1; // 1 means column, 0 means row
-		myTokenizer.getToken(); // Deletes 'DELETE' from strong
+		int range = 0;
+
+		myTokenizer.getToken(); // Deletes 'KEEP' from strong
 		if (myTokenizer.peekToken().getType() == Token.T_RECORD) {
 			myTokenizer.getToken();
 			columns = 1;
 		}
-		if (myTokenizer.peekToken().getType() == Token.T_FIELD) {
+		else if (myTokenizer.peekToken().getType() == Token.T_FIELD) {
 			myTokenizer.getToken();
 			columns = 0;
+		} else if (myTokenizer.peekToken().getType() == Token.T_RECORDS) {
+			myTokenizer.getToken();
+			columns = 3;
+		} else if (myTokenizer.peekToken().getType() == Token.T_FIELDS) {
+			myTokenizer.getToken();
+			columns = 2;
 		} else
 			parseError("You need to specify if you want to keep record(s)(rows) or field(s)(columns)");
 
-		if (myTokenizer.peekToken().getType() == Token.T_STRING)
-			// Expression could be one of 3 options: integer; integer + "," +
-			// integer etc.; integer + "-" + integer
+
+
+		if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
 			expression = myTokenizer.getToken();
 		else
 			parseError("You need to specify what you want to keep.");
-		if (myTokenizer.peekToken().getType() == Token.T_FROM)
+
+		if (  (columns == 3) || (columns ==2) )
+			if (myTokenizer.peekToken().getType() == Token.T_COMMA)
+			{
+				expressions = newArrayList<Integer>();
+				expressions.add(Integer,parseInt(expression.getValue()));
+				while (myTokenizer.peekToken().getType() == Token.T_COMMA){
+					myTokenizer.getToken();
+					if (myTokenizer.peektoken().getType() == Token.T_NUMBER)
+						expression = myTokenizer.getToken();
+					else
+						parseError("You need to specify what you want to keep.");
+					expressions.add(Integer.parseInt(expression.getValue()));
+				}
+			}
+		if (myTokenizer.peekToken().getType() == Token.T_TO){
+			myTokenizer.getToken();
+			range = 1;
+			expressions.add(Integer.parseint(expression.getValue()));
+			if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
+				expression = myTokenizer.getToken();
+			else
+				parseError("You need to specify the upper bound of thte records you want to keep.");
+			expressions.add(Integer.parseInt(expression.getValue()));
+		}
+
+
+		if(myTokenizer.peekToken().getType()==Token.T_FROM)
 			myTokenizer.getToken();
 		else
 			parseError("You need the keyword 'FROM' to specify which table.");
-		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE)
-			variable = myTokenizer.getToken();
+		if(myTokenizer.peekToken().getType()==Token.T_VARIABLE)
+			variable=myTokenizer.getToken();
 		else
 			parseError("You need the name of the table you want to manipulate.");
-	}
+
+		if (columns == 0){
+			tableVariables.put(variable.getValue(), Table.deleteColumn(variable.getValue(), Integer.parseInt(expressions.getValue())));
+		}else if (columns == 1){
+			tableVariables.put(variable.getValue(), Table.deleteRow(variable.getValue(), Integer.parseInt(expressions.getValue())));
+		}else if (columns == 3){
+			if (range == 0) {
+				int deleted = 0;
+				Collections.sort(expressions);
+				Collections.reverse(expressions);
+
+				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
+					tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), k));
+				}
+				for (int k = expressions.size - 1; k > 1;  k--){
+					for (int i = tableVariables.get(variable.getValue()); i > expressions.get(0); i--){
+						tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), i));
+					}
+
+
+				}
+			}else if (range == 1){
+				int deleted = 0;
+				Collections.sort(expressions);
+				Collections.reverse(expressions);
+				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
+					tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), k));
+				}
+				for (int k = expressions.get(1); k > 0; k--){
+					tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), k));
+				}
+			}
+		}else if (columns ==2){
+			if (range == 0) {
+				int deleted = 0;
+				Collections.sort(expressions);
+				Collections.reverse(expressions);
+
+				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
+					tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), k));
+				}
+				for (int k = expressions.size - 1; k > 1;  k--){
+					for (int i = tableVariables.get(variable.getValue()); i > expressions.get(0); i--){
+						tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), i));
+					}
+
+
+				}
+			}else if (range == 1){
+				int deleted = 0;
+				Collections.sort(expressions);
+				Collections.reverse(expressions);
+				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
+					tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), k));
+				}
+				for (int k = expressions.get(1); k > 0; k--){
+					tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), k));
+				}
+			}
+		}
+
+
+		}
 
 	public void parseError(String message) {
 		System.out.println(message);
