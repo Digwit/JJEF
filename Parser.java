@@ -191,8 +191,7 @@ public class Parser {
 		if (myTokenizer.peekToken().getType() == Token.T_RECORD) {
 			myTokenizer.getToken();
 			columns = 1;
-		}
-		else if (myTokenizer.peekToken().getType() == Token.T_FIELD) {
+		} else if (myTokenizer.peekToken().getType() == Token.T_FIELD) {
 			myTokenizer.getToken();
 			columns = 0;
 		} else if (myTokenizer.peekToken().getType() == Token.T_RECORDS) {
@@ -204,31 +203,28 @@ public class Parser {
 		} else
 			parseError("You need to specify if you want to keep record(s)(rows) or field(s)(columns)");
 
-
-
 		if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
 			expression = myTokenizer.getToken();
 		else
 			parseError("You need to specify what you want to keep.");
 
-		if (  (columns == 3) || (columns ==2) )
-			if (myTokenizer.peekToken().getType() == Token.T_COMMA)
-			{
-				expressions = newArrayList<Integer>();
-				expressions.add(Integer,parseInt(expression.getValue()));
-				while (myTokenizer.peekToken().getType() == Token.T_COMMA){
+		if ((columns == 3) || (columns == 2))
+			if (myTokenizer.peekToken().getType() == Token.T_COMMA) {
+				expressions = new ArrayList<Integer>();
+				expressions.add(Integer.parseInt(expression.getValue()));
+				while (myTokenizer.peekToken().getType() == Token.T_COMMA) {
 					myTokenizer.getToken();
-					if (myTokenizer.peektoken().getType() == Token.T_NUMBER)
+					if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
 						expression = myTokenizer.getToken();
 					else
 						parseError("You need to specify what you want to keep.");
 					expressions.add(Integer.parseInt(expression.getValue()));
 				}
 			}
-		if (myTokenizer.peekToken().getType() == Token.T_TO){
+		if (myTokenizer.peekToken().getType() == Token.T_TO) {
 			myTokenizer.getToken();
 			range = 1;
-			expressions.add(Integer.parseint(expression.getValue()));
+			expressions.add(Integer.parseInt(expression.getValue()));
 			if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
 				expression = myTokenizer.getToken();
 			else
@@ -236,78 +232,86 @@ public class Parser {
 			expressions.add(Integer.parseInt(expression.getValue()));
 		}
 
-
-		if(myTokenizer.peekToken().getType()==Token.T_FROM)
+		if (myTokenizer.peekToken().getType() == Token.T_FROM)
 			myTokenizer.getToken();
 		else
 			parseError("You need the keyword 'FROM' to specify which table.");
-		if(myTokenizer.peekToken().getType()==Token.T_VARIABLE)
-			variable=myTokenizer.getToken();
+		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE)
+			variable = myTokenizer.getToken();
 		else
 			parseError("You need the name of the table you want to manipulate.");
 
-		if (columns == 0){
-			tableVariables.put(variable.getValue(), Table.deleteColumn(variable.getValue(), Integer.parseInt(expressions.getValue())));
-		}else if (columns == 1){
-			tableVariables.put(variable.getValue(), Table.deleteRow(variable.getValue(), Integer.parseInt(expressions.getValue())));
-		}else if (columns == 3){
+		if (columns == 0) {
+			tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()),
+					Integer.parseInt(expression.getValue())));
+		} else if (columns == 1) {
+			tableVariables.put(variable.getValue(),
+					Table.deleteRow(tableVariables.get(variable.getValue()), Integer.parseInt(expression.getValue())));
+		} else if (columns == 3) {
 			if (range == 0) {
-				int deleted = 0;
 				Collections.sort(expressions);
 				Collections.reverse(expressions);
 
-				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
-					tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), k));
+				// From end to largest entry, stored at expressions.get(0)
+				// #CHECK
+				for (int k = tableVariables.get(variable).getRows(); k > expressions.get(0); k--) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteRow(tableVariables.get(variable.getValue()), k));
 				}
-				for (int k = expressions.size - 1; k > 1;  k--){
-					for (int i = tableVariables.get(variable.getValue()); i > expressions.get(0); i--){
-						tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), i));
+				// From each entry to the next highest one
+				for (int k = 0; k < expressions.size(); k++) {
+					for (int i = expressions.get(k) - 1; i > expressions.get(k + 1); i--) {
+						tableVariables.put(variable.getValue(),
+								Table.deleteRow(tableVariables.get(variable.getValue()), i));
 					}
 
-
 				}
-			}else if (range == 1){
-				int deleted = 0;
+			} else if (range == 1) {
 				Collections.sort(expressions);
 				Collections.reverse(expressions);
-				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
-					tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), k));
+				for (int k = tableVariables.get(variable.getValue()).getRows(); k > expressions.get(0); k--) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteRow(tableVariables.get(variable.getValue()), k));
 				}
-				for (int k = expressions.get(1); k > 0; k--){
-					tableVariables.put(variable.getValue(), Table.deleteRow(tableVariables.get(variable.getValue()), k));
+				for (int k = expressions.get(1) - 1; k >= 0; k--) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteRow(tableVariables.get(variable.getValue()), k));
 				}
 			}
-		}else if (columns ==2){
+		} else if (columns == 2) {
 			if (range == 0) {
-				int deleted = 0;
 				Collections.sort(expressions);
 				Collections.reverse(expressions);
 
-				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
-					tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), k));
+				// From end to largest entry, stored at expressions.get(0)
+				// #CHECK
+				for (int k = tableVariables.get(variable).getCols(); k > expressions.get(0); k--) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteColumn(tableVariables.get(variable.getValue()), k));
 				}
-				for (int k = expressions.size - 1; k > 1;  k--){
-					for (int i = tableVariables.get(variable.getValue()); i > expressions.get(0); i--){
-						tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), i));
+				// From each entry to the next highest one
+				for (int k = 0; k < expressions.size(); k++) {
+					for (int i = expressions.get(k) - 1; i > expressions.get(k + 1); i--) {
+						tableVariables.put(variable.getValue(),
+								Table.deleteColumn(tableVariables.get(variable.getValue()), i));
 					}
 
-
 				}
-			}else if (range == 1){
-				int deleted = 0;
+			} else if (range == 1) {
 				Collections.sort(expressions);
 				Collections.reverse(expressions);
-				for (int k = tableVariables.get(variable.getValue()); k > expressions.get(0); k--){
-					tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), k));
+				for (int k = tableVariables.get(variable.getValue()).getCols(); k > expressions.get(0); k--) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteColumn(tableVariables.get(variable.getValue()), k));
 				}
-				for (int k = expressions.get(1); k > 0; k--){
-					tableVariables.put(variable.getValue(), Table.deleteColumn(tableVariables.get(variable.getValue()), k));
+				for (int k = expressions.get(1) - 1; k >= 0; k--) {
+					tableVariables.put(variable.getValue(),
+							Table.deleteColumn(tableVariables.get(variable.getValue()), k));
 				}
 			}
 		}
 
-
-		}
+	}
 
 	public void parseError(String message) {
 		System.out.println(message);
