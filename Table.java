@@ -223,16 +223,14 @@ public class Table
           deleted1 [r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //copies over left half of original array
         }
       }
-      System.out.println(x.myArray[x.getRowIndex(3)][x.getColIndex(2)]); ////////////////////
-      /*
+      //This next bit might not be working
       for (int r = 0; r < x.myArray.length; r++)
       {
         for (int c = d + 1; c < x.myArray[0].length; c++)
         {
-          deleted1[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //NOT WORKING
+          deleted1[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //NOTE: should perhaps delete the d from record as well
         }
       }
-      */
       return new Table(deleted1);
     }
     
