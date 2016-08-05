@@ -22,14 +22,7 @@ public class Token {
 	public static final int T_TO = 16;
 	public static final int T_SAVE = 17;
 	public static final int T_PRINT = 18;
-	/*
-	 * public static final int T_("-") = 13; public static final int T_(",") =
-	 * 14; public static final int T_("=") = 15; public static final int T_(">")
-	 * = 16; public static final int T_("<") = 17; public static final int
-	 * T_(">=") = 18; public static final int T_("<=") = 19; public static final
-	 * int T_("+") = 20; public static final int T_("*") = 21; public static
-	 * final int T_("/") = 22;
-	 */
+	
 
 	private String myValue;
 	private int myType;
