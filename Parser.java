@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +37,8 @@ public class Parser {
 			parseDeleteStatement();
 		else if (myTokenizer.peekToken().getType() == Token.T_KEEP)
 			parseKeepStatement();
+		else if (myTokenizer.peekToken().getType() == Token.T_SAVE)
+			parseSaveStatement();
 		/*
 		 * else if(myTokenizer.peekToken().getType() == Token.T_PRINT)
 		 * parsePrintStatement();
@@ -312,7 +315,50 @@ public class Parser {
 		}
 
 	}
-
+	
+	////////////////////////////////////////////////////////////////////////
+	
+	public void parseSaveStatement() {
+		String filename = null;
+		Token variable = null;
+		myTokenizer.getToken(); //DELETES 'SAVE'
+		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE)
+		{
+			variable = myTokenizer.getToken();
+		}
+		else {
+			parseError("You need to specify which variable to save.");
+		}
+		if (myTokenizer.peekToken().getType() == Token.T_INTO){
+			myTokenizer.getToken();
+		}
+		else{
+			parseError("You need the 'INTO' keyword.");
+		}
+		if (myTokenizer.peekToken().getType() == Token.T_STRING){
+			filename = myTokenizer.getToken().getValue(); //Check if the parse bit deletes the \s or if needed
+		}
+		else{
+			parseError("U need a filename.");
+		}
+		
+		String data = "";
+		data = Table.save(tableVariables.get(variable.getValue()));
+		try {
+			Table.writeFile(filename, data);
+		} catch (IOException e) {
+			parseError("Dunno what this does.");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+    //////////////////////////////////////////////////////////////
 	public void parseError(String message) {
 		System.out.println(message);
 		System.exit(1);
