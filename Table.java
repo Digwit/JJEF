@@ -14,7 +14,8 @@ public class Table
   //For test
   public static void main(String[] args)
   {
-   Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/house.csv\" into house ; Delete record 3 from house ; Save house into \"person.csv\" ; " );
+   Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/house.csv\" into house ; Print \"age\" from house ; Delete record 1 from house ; Print \"age\" from house ;"
+   		+ " ");
 //   while(t.moreTokens())
 //    System.out.println(t.getToken());
    Parser p = new Parser(t);
@@ -25,14 +26,6 @@ public class Table
     System.out.println("Index of grid: " + attempt1.myColumns.get("grid"));
     */
    
-     try
-     {
-            writeFile("resultFile.txt", "Here's a file.\nWith multiple lines.\nThree to be exact.");
-     }
-     catch (IOException e)
-     {
-      System.out.println("Error: Couldn't save file");
-     }
   }
   
 
@@ -100,20 +93,16 @@ public class Table
       String[][] deleted;
       deleted = new String[x.myArray.length -1][x.myArray[0].length];
       
-      for (int r = 0; r < d; r++)
+      for (int c = 0; c < x.myArray[0].length; c++)
       {
-        for (int c = 0; c < x.myArray[0].length; c++)
-        {
-          deleted[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //copies over top half of original array
-        }
-      }
-      
-      for (int r = d + 1; r < x.myArray.length; r++)
-      {
-        for (int c = 0; c < x.myArray[0].length; c++)
-        {
-          deleted[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; // copies over bottom half of original array
-        }
+    	  for (int r = 0; r < (d -1); r++)
+    	  {
+    		  deleted[r][c] = x.myArray[r][c];
+    	  }
+    	  for (int r = (d+1); r < x.myArray.length -1;  r++)
+    	  {
+    		  deleted[r][c] = x.myArray[r][c];
+    	  }
       }
       return new Table(deleted);
     }
@@ -125,7 +114,7 @@ public class Table
       
       for (int r = 0; r < x.myArray.length; r++)
       {
-        for (int c = 0; c < d ; c++) 
+        for (int c = 0; c < (d - 1) ; c++) 
         {
           deleted1 [r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //copies over left half of original array
         }
@@ -133,7 +122,7 @@ public class Table
       //This next bit might not be working
       for (int r = 0; r < x.myArray.length; r++)
       {
-        for (int c = d + 1; c < x.myArray[0].length; c++)
+        for (int c = d + 1; c < x.myArray[0].length - 1; c++)
         {
           deleted1[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //NOTE: should perhaps delete the d from record as well
         }
@@ -142,30 +131,30 @@ public class Table
     }
     
     
-    public void printInfo(String variable)
+    public void printInfo(String name)
   {
     //Prints name of variable and number of observations
-    System.out.println(variable + " (" + myArray.length + " observations):");
+    System.out.println(name + " (" + myArray.length + " observations):");
     
     //Calculates  and prints mean
     double mean = 0;
     for (int r = 1; r < myArray.length; r++)
     {
-      mean = mean + Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
+      mean = mean + Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(name)]]);
     }
     mean /= myArray.length;
     System.out.println("Mean: " + mean);
     
     
     //Calculates min and max and prints
-    double max = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(variable)]]);
-    double min = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(variable)]]);
+    double max = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(name)]]);
+    double min = Double.parseDouble(myArray[myRowIndex[1]][myColIndex[myColumns.get(name)]]);
     for (int r = 1; r < myArray.length; r++)
     {
-      if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]) < min)
-        min = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
-     if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]) > max)
-        max = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(variable)]]);
+      if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(name)]]) < min)
+        min = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(name)]]);
+     if (Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(name)]]) > max)
+        max = Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(name)]]);
     }
     mean /= myArray.length;
     System.out.println("Max: " + max + "\n Min: " + min);
@@ -175,16 +164,16 @@ public class Table
     store = new double[myArray.length];
      for (int r = 1; r < myArray.length; r++)
     {
-      store[r] = Double.parseDouble(myArray[r][myColumns.get(variable)]);
+      store[r] = Double.parseDouble(myArray[r][myColumns.get(name)]);
     }
      Arrays.sort(store);
      if (myArray.length % 2 == 0)
      {
-      System.out.println((Double.parseDouble(myArray[(myArray.length/2)][myColIndex[myColumns.get(variable)]]) + Double.parseDouble(myArray[(myArray.length/2+1)][myColumns.get(variable)])) /2 );
+      System.out.println((Double.parseDouble(myArray[(myArray.length/2)][myColIndex[myColumns.get(name)]]) + Double.parseDouble(myArray[(myArray.length/2+1)][myColumns.get(name)])) /2 );
      }
      else
      {
-      System.out.println(Double.parseDouble(myArray[myArray.length/2 +1][myColIndex[myColumns.get(variable)]]));
+      System.out.println(Double.parseDouble(myArray[myArray.length/2 +1][myColIndex[myColumns.get(name)]]));
      }
    }
     
