@@ -1,3 +1,8 @@
+//Class: Token
+//Authors: Erica
+//Date finished: 8/4/16
+//Description:
+
 public class Token {
 	public static final int T_LOAD = 1;
 	public static final int T_INTO = 2;
