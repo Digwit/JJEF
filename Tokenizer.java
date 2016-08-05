@@ -17,10 +17,7 @@ public class Tokenizer {
 			myProgram = myProgram.substring(1);
 			return getToken(); // This is the recursive bit
 		} else {
-			String s = myProgram.substring(0, myProgram.indexOf(" ")); // Should
-																		// this
-																		// be
-																		// -1?
+			String s = myProgram.substring(0, myProgram.indexOf(" "));
 			myProgram = myProgram.substring(myProgram.indexOf(" "));
 			int t = 0;
 			if (s.toUpperCase().equals("LOAD"))
