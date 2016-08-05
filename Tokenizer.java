@@ -1,3 +1,8 @@
+//Class: Tokenizer
+//Authors: Erica, Jocelyn, Fanbo
+//Date finished: 8/4/16
+//Description:
+
 public class Tokenizer {
 	private String myProgram;
 
