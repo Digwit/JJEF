@@ -1,7 +1,8 @@
 //Class: Table
 //Authors: Erica, Fanbo
 //Date finished: 8/4/16
-//Description:
+//Description: If using anything other than windows, you need to change the save  function to 
+//             add \n where appropriate; You also will need to put in a valid .csv file address.
 
 import java.io.BufferedWriter;
 import java.util.*;
@@ -19,17 +20,10 @@ public class Table
   //For test
   public static void main(String[] args)
   {
-   Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/house.csv\" into house ; Print \"age\" from house ; Delete record 1 from house ; Print \"age\" from house ;"
-   		+ " ");
-//   while(t.moreTokens())
-//    System.out.println(t.getToken());
+   Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/house.csv\" into house ; Print \"age\" from house ; Delete record 1 from house ; Print \"age\" from house ; ");
+
    Parser p = new Parser(t);
    p.parseProgram();
-   /*
-    System.out.println(convert("C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"));
-    Table attempt1 = new Table(convert("C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"));
-    System.out.println("Index of grid: " + attempt1.myColumns.get("grid"));
-    */
    
   }
   
@@ -100,13 +94,13 @@ public class Table
       
       for (int c = 0; c < x.myArray[0].length; c++)
       {
-    	  for (int r = 0; r < (d -1); r++)
+    	  for (int r = 0; r < d; r++)
     	  {
     		  deleted[r][c] = x.myArray[r][c];
     	  }
-    	  for (int r = (d+1); r < x.myArray.length -1;  r++)
+    	  for (int r = (d+1); r < x.myArray.length;  r++)
     	  {
-    		  deleted[r][c] = x.myArray[r][c];
+    		  deleted[r-1][c] = x.myArray[r][c];
     	  }
       }
       return new Table(deleted);
@@ -119,7 +113,7 @@ public class Table
       
       for (int r = 0; r < x.myArray.length; r++)
       {
-        for (int c = 0; c < (d - 1) ; c++) 
+        for (int c = 0; c < (d) ; c++) 
         {
           deleted1 [r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //copies over left half of original array
         }
@@ -127,14 +121,13 @@ public class Table
       //This next bit might not be working
       for (int r = 0; r < x.myArray.length; r++)
       {
-        for (int c = d + 1; c < x.myArray[0].length - 1; c++)
+        for (int c = d + 1; c < x.myArray[0].length; c++)
         {
-          deleted1[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //NOTE: should perhaps delete the d from record as well
+          deleted1[r][c -1] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //NOTE: should perhaps delete the d from record as well
         }
       }
       return new Table(deleted1);
     }
-    
     
     public void printInfo(String name)
   {
@@ -143,6 +136,7 @@ public class Table
     
     //Calculates  and prints mean
     double mean = 0;
+    
     for (int r = 1; r < myArray.length; r++)
     {
       mean = mean + Double.parseDouble(myArray[myRowIndex[r]][myColIndex[myColumns.get(name)]]);
@@ -288,9 +282,12 @@ public class Table
      {
       for (int c = 0; c < t.getCols(); c++)
       {
-       output = output +"\""+ t.myArray[r][c] +"\"" + ",";  
+    	  if (c < t.getCols() - 1)
+             output = output + t.myArray[r][c]  + ",";
+    	  else
+    		  output = output + t.myArray[r][c];
       }
-      output = output + "\n";
+      output = output + "\r\n";
      }
      return output;
      
