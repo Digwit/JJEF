@@ -205,7 +205,7 @@ public class Table
       {
         for (int c = 0; c < x.myArray[0].length; c++)
         {
-          deleted[r + d][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; // copies over bottom half of original array
+          deleted[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; // copies over bottom half of original array
         }
       }
       return new Table(deleted);
