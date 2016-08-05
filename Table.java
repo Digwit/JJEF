@@ -14,7 +14,7 @@ public class Table
   //For test
   public static void main(String[] args)
   {
-   Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv\" into crime ; Delete record 2 from crime ; " );
+   Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/house.csv\" into house ; Delete record 3 from house ; Save house into \"person.csv\" ; " );
 //   while(t.moreTokens())
 //    System.out.println(t.getToken());
    Parser p = new Parser(t);
@@ -91,99 +91,6 @@ public class Table
     public void setRowIndex(int x, int y)
     {
      myRowIndex[x] = y;
-    }
-    
-    
-    //Convert changes a csv file into a String[][] (NOT a new table)
-    public static String[][] convert(String fileName)
-    {
-      String[][] dataTable;
-      
-      
-      Source s;
-      try
-      {
-        s = new Source(fileName);
-      }
-      catch (Exception e)
-      {
-        System.out.println("oops");
-        s = null;
-      }
-      
-      //Sets size of output array
-      String example = s.getLine(0);
-      String[] fields = example.split(",");
-      dataTable = new String[s.getNumberOfLines()][fields.length];
-      
-      for (int k = 0; k < s.getNumberOfLines(); k++)
-      { 
-        String line = s.getLine(k);
-        String[] parts;
-        parts = line.split(",");
-        
-        for (int i = 0; i < parts.length; i++)
-        {
-          dataTable[k][i] = parts[i];
-        }
-      }
-      return dataTable;
-    }
-    
-    public int getRows()
-    {
-     return myArray.length;
-    }
-    
-    public int getCols()
-    {
-     return myArray[0].length;
-    }
-    //Precondition: input tables' first column is the identifying variable, for now :)
-    //Precondition2: both input tables have same students in same order
-    public static Table mergeSameRows(Table x, Table y)
-    {
-      String[][] merged;
-      merged = new String[x.myArray.length][x.myArray[0].length + y.myArray[0].length - 1];
-      for (int r = 0; r < x.myArray.length; r++)
-      {
-        for (int c = 0; c < x.myArray[0].length; c++)
-        {
-          merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
-        }
-      }
-      for (int r = 0; r < y.myArray.length; r++)
-      {
-        for (int c = 1; c < y.myArray[0].length - 1; c++)
-        {
-          merged[r][c + x.myArray[0].length] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
-        }
-      }
-      return new Table(merged);
-    }
-    
-    public static Table mergeDiffRows(Table x, Table y)
-    {
-      
-        String[][] merged;
-        merged = new String[x.myArray.length + y.myArray.length -1][x.myArray[0].length];
-        for (int r = 0; r < x.myArray.length; r++)
-        {
-          for (int c = 0; c < x.myArray[0].length; c++)
-          {
-            merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
-          }
-        }
-        //second table--> delete row 1
-        for (int r = 1; r < y.myArray.length -1; r++)
-        {
-          for (int c = 0; c < y.myArray[0].length; c++)
-          {
-            merged[r + x.myArray.length][c] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
-          }
-        }
-        return new Table(merged);
-      
     }
     
     
@@ -281,6 +188,104 @@ public class Table
      }
    }
     
+    
+    
+    
+    //Convert changes a csv file into a String[][] (NOT a new table)
+    public static String[][] convert(String fileName)
+    {
+      String[][] dataTable;
+      
+      
+      Source s;
+      try
+      {
+        s = new Source(fileName);
+      }
+      catch (Exception e)
+      {
+        System.out.println("oops");
+        s = null;
+      }
+      
+      //Sets size of output array
+      String example = s.getLine(0);
+      String[] fields = example.split(",");
+      dataTable = new String[s.getNumberOfLines()][fields.length];
+      
+      for (int k = 0; k < s.getNumberOfLines(); k++)
+      { 
+        String line = s.getLine(k);
+        String[] parts;
+        parts = line.split(",");
+        
+        for (int i = 0; i < parts.length; i++)
+        {
+          dataTable[k][i] = parts[i];
+        }
+      }
+      return dataTable;
+    }
+    
+    public int getRows()
+    {
+     return myArray.length;
+    }
+    
+    public int getCols()
+    {
+     return myArray[0].length;
+    }
+    //Precondition: input tables' first column is the identifying variable, for now :)
+    //Precondition2: both input tables have same students in same order
+    public static Table mergeSameRows(Table x, Table y)
+    {
+      String[][] merged;
+      merged = new String[x.myArray.length][x.myArray[0].length + y.myArray[0].length - 1];
+      for (int r = 0; r < x.myArray.length; r++)
+      {
+        for (int c = 0; c < x.myArray[0].length; c++)
+        {
+          merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
+        }
+      }
+      for (int r = 0; r < y.myArray.length; r++)
+      {
+        for (int c = 1; c < y.myArray[0].length - 1; c++)
+        {
+          merged[r][c + x.myArray[0].length] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
+        }
+      }
+      return new Table(merged);
+    }
+    
+    public static Table mergeDiffRows(Table x, Table y)
+    {
+      
+        String[][] merged;
+        merged = new String[x.myArray.length + y.myArray.length -1][x.myArray[0].length];
+        for (int r = 0; r < x.myArray.length; r++)
+        {
+          for (int c = 0; c < x.myArray[0].length; c++)
+          {
+            merged[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)];
+          }
+        }
+        //second table--> delete row 1
+        for (int r = 1; r < y.myArray.length -1; r++)
+        {
+          for (int c = 0; c < y.myArray[0].length; c++)
+          {
+            merged[r + x.myArray.length][c] = y.myArray[y.getRowIndex(r)][y.getColIndex(c)];
+          }
+        }
+        return new Table(merged);
+      
+    }
+    
+    
+    
+
     public static String save(Table t)
     {
      String output = "";
