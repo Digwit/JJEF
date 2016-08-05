@@ -1,3 +1,9 @@
+//Class: Parser 
+//Authors: Erica, Jocelyn
+//Date finished: 8/4/16
+//Description: 
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
