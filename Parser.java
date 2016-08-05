@@ -324,7 +324,6 @@ public class Parser {
 
 	}
 
-	////////////////////////////////////////////////////////////////////////
 
 	public void parseSaveStatement() {
 		String filename = null;
@@ -352,23 +351,15 @@ public class Parser {
 
 		String data = "";
 		data = Table.save(tableVariables.get(variable.getValue()));
-		
 		 try
 	     {
-	            Table.writeFile("dummy.txt", "Here's a file.\nWith multiple lines.\nThree to be exact.");
+	            Table.writeFile(filename, data);
 	     }
 	     catch (IOException e)
 	     {
 	      System.out.println("Error: Couldn't save file");
 	     }
 		 
-//		try {
-//			Table.writeFile(filename, data);
-//		} catch (IOException e) {
-//			parseError("Dunno what this does.");
-//			e.printStackTrace();
-//		}
-
 	}
 
 	public void parsePrintStatement() {
@@ -395,7 +386,6 @@ public class Parser {
 		} else {
 			parseError("You need to specify which table you this column is in.");
 		}
-
 		tableVariables.get(variable).printInfo(column);
 
 	}
