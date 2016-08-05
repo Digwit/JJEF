@@ -81,12 +81,13 @@ public class Parser {
 
 		int columns = -1; // 1 means column, 0 means row
 		myTokenizer.getToken(); // Deletes 'DELETE' from strong
+		
 		if (myTokenizer.peekToken().getType() == Token.T_RECORD) {
 			myTokenizer.getToken();
-			columns = 1;
+			columns = 0;
 		} else if (myTokenizer.peekToken().getType() == Token.T_FIELD) {
 			myTokenizer.getToken();
-			columns = 0;
+			columns = 1;
 		} else if (myTokenizer.peekToken().getType() == Token.T_RECORDS) {
 			myTokenizer.getToken();
 			columns = 3;
