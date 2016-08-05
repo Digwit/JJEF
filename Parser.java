@@ -39,10 +39,9 @@ public class Parser {
 			parseKeepStatement();
 		else if (myTokenizer.peekToken().getType() == Token.T_SAVE)
 			parseSaveStatement();
-		/*
-		 * else if(myTokenizer.peekToken().getType() == Token.T_PRINT)
-		 * parsePrintStatement();
-		 */
+		else if (myTokenizer.peekToken().getType() == Token.T_PRINT)
+			parsePrintStatement();
+
 	}
 
 	public void parseLoadStatement() {
@@ -80,8 +79,8 @@ public class Parser {
 		int range = 0;
 
 		int columns = -1; // 1 means column, 0 means row
-		myTokenizer.getToken(); // Deletes 'DELETE' from strong
-		
+		myTokenizer.getToken(); // Deletes 'DELETE' from string
+
 		if (myTokenizer.peekToken().getType() == Token.T_RECORD) {
 			myTokenizer.getToken();
 			columns = 0;
@@ -111,21 +110,23 @@ public class Parser {
 
 				while (myTokenizer.peekToken().getType() == Token.T_COMMA) {
 					myTokenizer.getToken();
-					if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
-						// Expression could be one of 3 options: integer;
-						// integer + "," + integer etc.; integer + "-" + integer
+					if (myTokenizer.peekToken().getType() == Token.T_NUMBER)					
 						expression = myTokenizer.getToken();
 					else
 						parseError("You need to specify what you want to delete.");
 					expressions.add(Integer.parseInt(expression.getValue()));
 				}
 			}
-			if (myTokenizer.peekToken().getType() == Token.T_TO) {
+			else if (myTokenizer.peekToken().getType() == Token.T_TO) {
+				expressions = new ArrayList<Integer>();
+				expressions.add(Integer.parseInt(expression.getValue()));
 				myTokenizer.getToken();
 				range = 1;
 				expressions.add(Integer.parseInt(expression.getValue()));
 				if (myTokenizer.peekToken().getType() == Token.T_NUMBER)
+				{
 					expression = myTokenizer.getToken();
+				}
 				else
 					parseError("You need to specify the upper bound of the RECORDS you want to delete.");
 				expressions.add(Integer.parseInt(expression.getValue()));
@@ -316,50 +317,84 @@ public class Parser {
 		}
 
 	}
-	
+
 	////////////////////////////////////////////////////////////////////////
-	
+
 	public void parseSaveStatement() {
 		String filename = null;
 		Token variable = null;
-		myTokenizer.getToken(); //DELETES 'SAVE'
-		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE)
-		{
+		myTokenizer.getToken(); // DELETES 'SAVE'
+		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE) {
 			variable = myTokenizer.getToken();
-		}
-		else {
+			System.out.println(variable);
+		} else {
 			parseError("You need to specify which variable to save.");
 		}
-		if (myTokenizer.peekToken().getType() == Token.T_INTO){
+		if (myTokenizer.peekToken().getType() == Token.T_INTO) {
 			myTokenizer.getToken();
-		}
-		else{
+		} else {
 			parseError("You need the 'INTO' keyword.");
 		}
-		if (myTokenizer.peekToken().getType() == Token.T_STRING){
-			filename = myTokenizer.getToken().getValue(); //Check if the parse bit deletes the \s or if needed
-		}
-		else{
+		if (myTokenizer.peekToken().getType() == Token.T_STRING) {
+			String temp = myTokenizer.getToken().getValue();
+			temp = temp.substring(1);
+			temp = temp.substring(0, temp.length() - 1);
+			filename = temp; // DELETING THE '/'
+		} else {
 			parseError("U need a filename.");
 		}
-		
+
 		String data = "";
 		data = Table.save(tableVariables.get(variable.getValue()));
-		try {
-			Table.writeFile(filename, data);
-		} catch (IOException e) {
-			parseError("Dunno what this does.");
-			e.printStackTrace();
-		}
 		
+		 try
+	     {
+	            Table.writeFile("dummy.txt", "Here's a file.\nWith multiple lines.\nThree to be exact.");
+	     }
+	     catch (IOException e)
+	     {
+	      System.out.println("Error: Couldn't save file");
+	     }
+		 
+//		try {
+//			Table.writeFile(filename, data);
+//		} catch (IOException e) {
+//			parseError("Dunno what this does.");
+//			e.printStackTrace();
+//		}
+
 	}
-	
-	
-	
-	
-	
-	
-    //////////////////////////////////////////////////////////////
+
+	public void parsePrintStatement() {
+		String column = "";
+		String variable = null;
+
+		myTokenizer.getToken(); // Deletes 'PRINT' from string
+
+		if (myTokenizer.peekToken().getType() == Token.T_STRING) {
+			column = myTokenizer.getToken().getValue();
+			column = column.substring(1);
+			column = column.substring(0, column.length() - 1) ; //maybe -2 + \"?
+		} else {
+			parseError("You need to specify which column you which to get information from.");
+		}
+
+		if (myTokenizer.peekToken().getType() == Token.T_FROM) {
+			myTokenizer.getToken();
+		} else {
+			parseError("You must use the keyword 'FROM' ");
+		}
+		if (myTokenizer.peekToken().getType() == Token.T_VARIABLE) {
+			variable = myTokenizer.getToken().getValue();
+		} else {
+			parseError("You need to specify which table you this column is in.");
+		}
+
+		tableVariables.get(variable).printInfo(column);
+
+	}
+
+	//////////////////////////////////////////////////////////////
 	public void parseError(String message) {
 		System.out.println(message);
 		System.exit(1);
