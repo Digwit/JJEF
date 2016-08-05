@@ -1,7 +1,6 @@
 //Class: Source
 //Authors: Erica, Mr.Cutler
 //Date finished: 8/1/16
-//Description:
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
