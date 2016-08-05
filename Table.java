@@ -1,21 +1,38 @@
+import java.io.BufferedWriter;
 import java.util.*;
 import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.IOException;
 
 public class Table
 {
   //For test
   public static void main(String[] args)
   {
-	  Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/house.csv\" into crime ; " );
-//	  while(t.moreTokens())
-//		  System.out.println(t.getToken());
-  Parser p = new Parser(t);
-	  p.parseProgram();
-	  /*
+   Tokenizer t = new Tokenizer("Load \"C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv\" into crime ; Delete record 2 from crime ; " );
+//   while(t.moreTokens())
+//    System.out.println(t.getToken());
+   Parser p = new Parser(t);
+   p.parseProgram();
+   /*
     System.out.println(convert("C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"));
     Table attempt1 = new Table(convert("C:/Users/chsieh/Documents/ERICA/DR_JAVA/JJEF/SacramentocrimeJanuary2006.csv"));
     System.out.println("Index of grid: " + attempt1.myColumns.get("grid"));
     */
+   
+     try
+     {
+            writeFile("resultFile.txt", "Here's a file.\nWith multiple lines.\nThree to be exact.");
+     }
+     catch (IOException e)
+     {
+      System.out.println("Error: Couldn't save file");
+     }
   }
   
 
@@ -31,32 +48,24 @@ public class Table
     //Constructor
     public Table(String[][] input)
     {
-    	myRowIndex = new int [input.length];
+     myRowIndex = new int [input.length];
         for (int r = 0; r < input.length; r++)
         {
-       	 myRowIndex[r] = r;
+         myRowIndex[r] = r;
         }
         
         myColIndex = new int[input[0].length];
         for (int c = 0; c < input[0].length; c++)
         {
-       	 myColIndex[c] = c;
+         myColIndex[c] = c;
         }
       myColumns = makeMap(input);
       myArray = input;
     }
     
-    public int getRows()
-    {
-    	return myArray.length;
-    }
     
-    public int getCols()
-    {
-    	return myArray[0].length;
-    }
     
-    //METHODS 
+    //METHODS
     public Map<String, Integer> makeMap(String[][] data)
     {
       myColumns = new HashMap<String, Integer>();
@@ -70,18 +79,18 @@ public class Table
     
     public int getRowIndex(int x)
     {
-    	return myRowIndex[x];
+     return myRowIndex[x];
     }
     
     
     public int getColIndex(int x)
     {
-    	return myColIndex[x];
+     return myColIndex[x];
     }
     
     public void setRowIndex(int x, int y)
     {
-    	myRowIndex[x] = y;
+     myRowIndex[x] = y;
     }
     
     
@@ -121,6 +130,15 @@ public class Table
       return dataTable;
     }
     
+    public int getRows()
+    {
+     return myArray.length;
+    }
+    
+    public int getCols()
+    {
+     return myArray[0].length;
+    }
     //Precondition: input tables' first column is the identifying variable, for now :)
     //Precondition2: both input tables have same students in same order
     public static Table mergeSameRows(Table x, Table y)
@@ -205,13 +223,16 @@ public class Table
           deleted1 [r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //copies over left half of original array
         }
       }
+      System.out.println(x.myArray[x.getRowIndex(3)][x.getColIndex(2)]); ////////////////////
+      /*
       for (int r = 0; r < x.myArray.length; r++)
       {
         for (int c = d + 1; c < x.myArray[0].length; c++)
         {
-          deleted1[r+d][c] = x.myArray[x.getRowIndex(r+d)][x.getColIndex(c)];
+          deleted1[r][c] = x.myArray[x.getRowIndex(r)][x.getColIndex(c)]; //NOT WORKING
         }
       }
+      */
       return new Table(deleted1);
     }
     
@@ -254,13 +275,47 @@ public class Table
      Arrays.sort(store);
      if (myArray.length % 2 == 0)
      {
-    	 System.out.println((Double.parseDouble(myArray[(myArray.length/2)][myColIndex[myColumns.get(variable)]]) + Double.parseDouble(myArray[(myArray.length/2+1)][myColumns.get(variable)])) /2 );
+      System.out.println((Double.parseDouble(myArray[(myArray.length/2)][myColIndex[myColumns.get(variable)]]) + Double.parseDouble(myArray[(myArray.length/2+1)][myColumns.get(variable)])) /2 );
      }
      else
      {
-    	 System.out.println(Double.parseDouble(myArray[myArray.length/2 +1][myColIndex[myColumns.get(variable)]]));
+      System.out.println(Double.parseDouble(myArray[myArray.length/2 +1][myColIndex[myColumns.get(variable)]]));
      }
    }
     
+    public static String save(Table t)
+    {
+     String output = "";
+     
+     for (int r = 0; r < t.getRows(); r++ )
+     {
+      for (int c = 0; c < t.getCols(); c++)
+      {
+       output = output +"\""+ t.myArray[r][c] +"\"" + ",";  
+      }
+      output = output + "\n";
+     }
+     return output;
+     
+}
     
-  }
+    public static void writeFile(String resultFile, String data) throws IOException
+    {
+     BufferedWriter writer;
+     
+     writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(resultFile)));
+     
+     writer.write(data, 0, data.length());
+     
+     writer.close();
+    }
+    
+
+}
+ 
+
+   
+// convert from string to other objects    
+// String s = "253";
+// int x ;
+// x = Integer.parseInt(s);
