@@ -1,3 +1,8 @@
+//Class: Table
+//Authors: Erica, Fanbo
+//Date finished: 8/4/16
+//Description:
+
 import java.io.BufferedWriter;
 import java.util.*;
 import java.util.Arrays;
